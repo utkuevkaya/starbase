@@ -40,6 +40,9 @@ class Drone:
     def plot(self):
         plt.plot(self.errors)
         plt.gca().invert_yaxis()
+        plt.xlabel("Iteration")
+        plt.ylabel("Error")
+        plt.title("Error Over Time")
         plt.show()
 
 
