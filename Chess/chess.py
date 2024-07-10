@@ -1,39 +1,57 @@
 class Chess:
-    def __init__(self):
-        self.board = [["_","_","_","_","_","_","_","_"], 
-                      ["_","_","_","_","_","_","_","_"], 
+    def __init__(self, players_name):
+        self.board = [["R","K","B","Z","U","B","K","R"], 
+                      ["P","P","P","P","P","P","P","P"], 
                       ["_","_","_","_","_","_","_","_"], 
                       ["_","_","_","_","_","_","_","_"],
                       ["_","_","_","_","_","_","_","_"],
                       ["_","_","_","_","_","_","_","_"],
                       ["p","p","p","p","p","p","p","p"], 
                       ["r","k","b","z","u","b","k","r"]]
+        
+        self.round = 1
+        self.players = players_name
+        self.turn = None
     
     
     
     def control(self):
-        self.display_board()
-        for i in range(10):
+        while not self.is_checkmate():
+            self.turn = self.players[(self.round % 2) - 1]
+            self.display_board(self.turn)
+
             piece, coordinate = self.select_piece()
-            new_coordinate = self.select_move(piece, coordinate)
+            piece_lower = piece.lower()
+
+            new_coordinate = self.select_move(piece_lower, coordinate)
             self.upgrade_board(piece, coordinate, new_coordinate) 
-            self.display_board()
+            self.round += 1
 
 
 
     def select_piece(self): 
-        while True:
-            piece, coordinate = input("\nEnter Piece and Coordinate (b-a8): ").lower().split("-")
+        while True and self.turn == self.players[0]:
+            piece, coordinate = input("\nEnter Piece and Coordinate (p-a7): ").lower().split("-")
 
             col, row = list("abcdefgh").index(coordinate[0]), int(coordinate[-1]) - 1
+
+            if self.board[row][col] != piece:
+                print("Invalid Piece:")
+
+            else: 
+                return piece, [row, col]
             
+            
+        while True and self.turn == self.players[1]:
+            piece, coordinate = input("\nEnter Piece and Coordinate (P-a2): ").upper().split("-")
+
+            col, row = list("ABCDEFGH").index(coordinate[0]), int(coordinate[-1]) - 1
+
             if self.board[row][col] != piece:
                 print("Invalid Piece:")
 
             else:
                 return piece, [row, col]
-
-
 
 
     # Move Selecting Functions  
@@ -67,7 +85,7 @@ class Chess:
                         
                 else: 
                     for iter, col in enumerate(range(min_col + 1, max_col)):
-                        if not self.is_place_available([min_row - iter - 1, col]):
+                        if not self.is_place_available([max_row - iter - 1, col]):
                             return False
 
                 return True
@@ -147,9 +165,15 @@ class Chess:
     def is_move_available(self, piece, coordinate, move):
         match piece:
             case "p":
-                if (move[0] - coordinate[0] == -1) and (move[-1] == coordinate[-1]):
-                    return True
-                else: return False
+                if self.turn == self.players[0]:
+                    if (move[0] - coordinate[0] == -1) and (move[-1] == coordinate[-1]) or ((move[0] - coordinate[0] == -2) and (move[-1] == coordinate[-1]) and (coordinate[0] == 6)):
+                        return True
+                    
+                else:
+                    if (move[0] - coordinate[0] == 1) and (move[-1] == coordinate[-1]) or ((move[0] - coordinate[0] == 2) and move[-1] == coordinate[-1] and coordinate[0] == 1):
+                        return True
+                    
+                return False
 
             case "b":
                 if abs(move[0] - coordinate[0]) == abs(move[-1] - coordinate[-1]):
@@ -201,6 +225,13 @@ class Chess:
 
 
 
+    # Controlling Game
+    def is_checkmate(self):
+        return False
+
+
+
+
     # Board Functions 
     def upgrade_board(self, piece, prev_coordinate, coordinate):
         self.board[prev_coordinate[0]][prev_coordinate[-1]] = "_"
@@ -208,9 +239,17 @@ class Chess:
 
 
     
-    def display_board(self):
-        for row in range(len(self.board)):
+    def display_board(self, player):
+        print("\n")
+        print("\t", end="")
+
+        for i in (list("abcdefgh")):
+            print(i, end="\t")
+        print("\n", 70*"_")
+
+        for index, row in enumerate(range(len(self.board))):
             print("\n")
+            print((index + 1), "|", end="\t")
             for col in range(len(self.board[0])):
                 if self.board[row][col] == " ":
                     print("_", end="\t")
@@ -218,5 +257,8 @@ class Chess:
                     print(self.board[row][col], end="\t")
 
 
-chess = Chess()
+        print(player + "'s Turn!")
+
+
+chess = Chess(["Utku", "Defne"])
 chess.control()
