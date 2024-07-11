@@ -1,3 +1,5 @@
+from random import choice
+
 class Chess:
     def __init__(self, players_name):
         self.board = [['R','K','B','Z','U','B','K','R'], 
@@ -14,25 +16,69 @@ class Chess:
         self.turn = None
         self.points = [0, 0]
         self.count = [8, 2, 2, 2, 1, 8, 2, 2, 2, 1]
+        self.vs_ai = False
     
     
     
     def control(self):
-        while not self.is_checkmate():
-            self.turn = self.players[(self.round % 2) - 1]
-            
-            captured_piece = self.is_anything_captured()
-            self.counting_points(captured_piece.lower())
+        vs_ai = input("Double Player (dp) or Vs AI (ai)?: ").lower()
 
-            self.display_board(self.turn)
+        if vs_ai == "dp":
+            while not self.is_checkmate():
+                self.turn = self.players[(self.round % 2) - 1]
+                
+                captured_piece = self.is_anything_captured()
+                self.counting_points(captured_piece.lower())
 
-            piece, coordinate = self.select_piece()
-            piece_lower = piece.lower()
+                self.display_board(self.turn)
 
-            new_coordinate = self.select_move(piece_lower, coordinate)
-            
-            self.upgrade_board(piece, coordinate, new_coordinate) 
-            self.round += 1
+                piece, coordinate = self.select_piece()
+                piece_lower = piece.lower()
+
+                new_coordinate = self.select_move(piece_lower, coordinate)
+                
+                self.upgrade_board(piece, coordinate, new_coordinate) 
+                self.round += 1
+
+        #TODO catch error 
+        #TODO adjust is_checkmate() check 
+        if vs_ai == "ai":
+            self.players.append("AI")
+            while not self.is_checkmate():
+                self.turn = self.players[(self.round % 2) - 1]
+                
+                captured_piece = self.is_anything_captured()
+                self.counting_points(captured_piece.lower())
+
+                self.display_board(self.turn)
+
+                piece, coordinate = self.select_piece()
+                piece_lower = piece.lower()
+
+                new_coordinate = self.select_move(piece_lower, coordinate)
+                
+                self.upgrade_board(piece, coordinate, new_coordinate) 
+                self.round += 1
+
+                self.ai()
+
+
+
+    def ai(self):
+        self.turn = self.players[(self.round % 2) - 1]
+
+        captured_piece = self.is_anything_captured()
+        self.counting_points(captured_piece.lower())
+
+        self.display_board(self.turn)
+
+        piece_coordinate = choice(self.select_piece_and_coordinate())
+        piece, coordinate = piece_coordinate[0], piece_coordinate[-1]
+        moves = self.return_available_moves(piece.lower(), coordinate)
+        move = choice(moves)
+
+        self.upgrade_board(piece, coordinate, move)
+        self.round += 1
 
 
 
@@ -62,6 +108,31 @@ class Chess:
 
 
     # Move Selecting Functions  
+    def select_piece_and_coordinate(self):
+        piece_and_coordinate = []
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                if self.board[row][col] in "PBKRZU":
+                    piece_and_coordinate.append([self.board[row][col], [row, col]])
+        return piece_and_coordinate
+
+
+    def return_available_moves(self, piece, coordinate):
+        print(piece, coordinate)
+        available_moves = []
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                if self.can_go(piece, coordinate, [row, col]) and \
+                self.is_move_available(piece, coordinate, [row, col]) and \
+                self.is_place_available([row, col], [row, col]):
+                    available_moves.append([row, col])
+                else:
+                    continue
+
+        return available_moves
+    
+
+
     def can_go(self, piece, coordinate, move):
         min_row = min(coordinate[0], move[0])
         max_row = max(coordinate[0], move[0])
@@ -315,3 +386,7 @@ class Chess:
         print(15*'_')
         print(self.players[0] + ':', self.points[0])
         print(self.players[1] + ':', self.points[-1])
+
+
+chess = Chess(["Utku"])
+chess.control()
