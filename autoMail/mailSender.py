@@ -2,49 +2,67 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def send_email(sender_email, receiver_email, subject, body, password):
-    # Mesaj oluştur
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = receiver_email
-    msg['Subject'] = subject
+class MailSender:
+    def __init__(self, senderEmail, receiverEmail, subject, body, password):
+        self.senderEmail = senderEmail
+        self.receiverEmail = receiverEmail
+        self.subject = subject
+        self.body = body
+        self.password = password
 
-    # Mesaj gövdesini ekle
-    msg.attach(MIMEText(body, 'plain'))
+    def send_email(self):
+        msg = MIMEMultipart()
+        msg['From'] = self.senderEmail
+        msg['To'] = self.receiverEmail
+        msg['Subject'] = self.subject
+        msg.attach(MIMEText(self.body, 'plain'))
 
-    try:
-        # SMTP sunucusuna bağlan ve giriş yap
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()  # Bağlantıyı güvenli hale getir
-        server.login(sender_email, password)
+        try: 
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(self.senderEmail, self.password)
 
-        # E-postayı gönder
-        text = msg.as_string()
-        server.sendmail(sender_email, receiver_email, text)
-        print("E-posta başarıyla gönderildi!")
+            text = msg.as_string()
+            server.sendmail(self.senderEmail, self.receiverEmail, text)
+            print("E-Posta başarılı")
 
-        # Sunucu bağlantısını kapat
-        server.quit()
+            server.quit()
 
-    except Exception as e:
-        print(f"E-posta gönderiminde bir hata oluştu: {e}")
+        except Exception as e:
+            print(f"Hata: {e}")
 
-if __name__ == "__main__":
-    sender = "utkuevkaya@gmail.com"
-    receiver = "arda.evkaya.ub.10@istek.k12.tr"
-    subject = "Test Mail"
-    body = "This is a test email from Python."
-    password = "wdye rqmf hjsk bbuk"
+# def send_email(sender_email, receiver_email, subject, body, password):
+#     # Mesaj oluştur
+#     msg = MIMEMultipart()
+#     msg['From'] = sender_email
+#     msg['To'] = receiver_email
+#     msg['Subject'] = subject
 
-    send_email(sender, receiver, subject, body, password)
+#     # Mesaj gövdesini ekle
+#     msg.attach(MIMEText(body, 'plain'))
 
+#     try:
+#         # SMTP sunucusuna bağlan ve giriş yap
+#         server = smtplib.SMTP('smtp.gmail.com', 587)
+#         server.starttls()  # Bağlantıyı güvenli hale getir
+#         server.login(sender_email, password)
 
+#         # E-postayı gönder
+#         text = msg.as_string()
+#         server.sendmail(sender_email, receiver_email, text)
+#         print("E-posta başarıyla gönderildi!")
 
-#TODO
-# import smtplib 
-# from email.mime.text import MIMEText
-# from email.mime.multipart import MIMEMultipart
+#         # Sunucu bağlantısını kapat
+#         server.quit()
 
-# class emailSender:
-#     def __init__(self, sender, receivers, password, subject, body):
-#         pass
+#     except Exception as e:
+#         print(f"E-posta gönderiminde bir hata oluştu: {e}")
+
+# if __name__ == "__main__":
+#     sender = "utkuevkaya@gmail.com"
+#     receiver = "arda.evkaya.ub.10@istek.k12.tr"
+#     subject = "Test Mail"
+#     body = "This is a test email from Python."
+#     password = "wdye rqmf hjsk bbuk"
+
+#     send_email(sender, receiver, subject, body, password)
