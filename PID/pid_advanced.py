@@ -46,6 +46,10 @@ class Drone:
         plt.show()
 
 
-drone = Drone(5000, 200)
-drone.PID(0.1, 0.0015, 2, 2000)
+# drone = Drone(5000, 200)
+# drone.PID(0.1, 0.0015, 2, 2000)
+# drone.plot()
+
+drone = Drone(10000, 250)
+drone.PID(0.1, 0.00045, 2.5, 2000)
 drone.plot()
