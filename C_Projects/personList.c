@@ -29,7 +29,6 @@ int main()
             case 1:
                 if (count >= capacity)
                 {
-                    printf("Kapa arttı lan!");
                     capacity *= 2;
                     persons = realloc(persons, capacity * sizeof(Person));
                 }
