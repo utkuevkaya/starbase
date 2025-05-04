@@ -41,11 +41,12 @@ int main()
             case 3:
                 show_description();
                 break;
-            case 4:
+            case 4: {
                 Event *sorted = sort_events(events);
                 list_events(sorted);
                 free(sorted);
                 break;
+            }
             case 5:
                 delete_event();
                 update_file();
